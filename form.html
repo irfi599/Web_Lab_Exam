@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Payment Form Validation</title>
+<style>
+body{
+    font-family:Arial;
+    background:#eef2f3;
+}
+.container{
+    width:400px;
+    margin:40px auto;
+    background:white;
+    padding:20px;
+    border-radius:8px;
+    box-shadow:0 0 10px gray;
+}
+input,select{
+    width:100%;
+    padding:8px;
+    margin:6px 0;
+}
+button{
+    width:100%;
+    padding:10px;
+    background:blue;
+    color:white;
+    border:none;
+    cursor:pointer;
+}
+button:hover{
+    background:darkblue;
+}
+.error{
+    color:red;
+    font-size:13px;
+}
+.success{
+    color:green;
+    text-align:center;
+    font-weight:bold;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+<h2>Payment Form</h2>
+
+<form id="paymentForm">
+
+<input type="text" id="name" placeholder="Card Holder Name">
+<div class="error" id="nameError"></div>
+
+<input type="text" id="card" maxlength="16" placeholder="Credit Card Number">
+<div class="error" id="cardError"></div>
+
+<input type="text" id="cvv" maxlength="3" placeholder="CVV">
+<div class="error" id="cvvError"></div>
+
+<label>Expiry Date</label>
+<select id="month"></select>
+<select id="year"></select>
+<div class="error" id="expiryError"></div>
+
+<button type="submit">Pay Now</button>
+
+<div class="success" id="successMsg"></div>
+
+</form>
+</div>
+
+<script>
+
+// Generate Month Dropdown
+let month=document.getElementById("month");
+month.innerHTML="<option value=''>Month</option>";
+for(let i=1;i<=12;i++){
+month.innerHTML+=`<option value="${i}">${i}</option>`;
+}
+
+// Generate Year Dropdown
+let year=document.getElementById("year");
+year.innerHTML="<option value=''>Year</option>";
+let currentYear=new Date().getFullYear();
+for(let i=currentYear;i<=currentYear+10;i++){
+year.innerHTML+=`<option value="${i}">${i}</option>`;
+}
+
+// Auto focus
+document.getElementById("card").addEventListener("input",function(){
+if(this.value.length==16){
+document.getElementById("cvv").focus();
+}
+});
+
+document.getElementById("paymentForm").addEventListener("submit",function(e){
+
+e.preventDefault();
+let valid=true;
+document.querySelectorAll(".error").forEach(e=>e.innerHTML="");
+document.getElementById("successMsg").innerHTML="";
+
+let name=document.getElementById("name").value.trim();
+let card=document.getElementById("card").value.trim();
+let cvv=document.getElementById("cvv").value.trim();
+let monthVal=document.getElementById("month").value;
+let yearVal=document.getElementById("year").value;
+
+// Name validation
+if(!/^[A-Za-z ]+$/.test(name)){
+document.getElementById("nameError").innerHTML="Name must contain alphabets only";
+valid=false;
+}
+
+// Card validation (example: must start with 4 or 5 and 16 digits)
+if(!/^[45]\d{15}$/.test(card)){
+document.getElementById("cardError").innerHTML="Invalid Card Number";
+valid=false;
+}
+
+// CVV validation
+if(!/^\d{3}$/.test(cvv)){
+document.getElementById("cvvError").innerHTML="CVV must be 3 digits";
+valid=false;
+}
+
+// Expiry validation
+let today=new Date();
+let expiry=new Date(yearVal,monthVal-1);
+
+if(monthVal=="" || yearVal=="" || expiry<=today){
+document.getElementById("expiryError").innerHTML="Invalid Expiry Date";
+valid=false;
+}
+
+if(valid){
+document.getElementById("successMsg").innerHTML="Payment Successful";
+}
+
+});
+</script>
+
+</body>
+</html>
